@@ -1,9 +1,12 @@
 #include <SD.h>
 #include <SPI.h>
 #include <string.h>
-#include "dht2/dht11.h"
-#include "lib/TinyGPS++.h"
+#include "TinyGPS++.h"
 #include "SoftwareSerial.h"
+#include "MPU/MPU6050.h"
+#include <Ethernet.h>
+#include "I2Cdev.h"
+#include <Wire.h>
 #include "defines.h"
 
 class HAB{
@@ -17,35 +20,33 @@ class HAB{
             while(!Serial);
             while(!mySerial);
         }
-        int setupSD(void){
-            pinMode(SDPin, OUTPUT);
-            if(!SD.begin()) return INIT_SD_ERROR;
-            return STATUS_OK;
-        }
         int setupMPU(void){
-            return STATUS_OK;
+            accelgyro.initialize();
+            Serial.println("Testing device connections...");
+            Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+            accelgyro.setXAccelOffset(501);
+            accelgyro.setYAccelOffset(619);
+            accelgyro.setZAccelOffset(2061);
+            accelgyro.setXGyroOffset(-26);
+            accelgyro.setYGyroOffset(-12);
+            accelgyro.setZGyroOffset(35);
+                
         }
         int setup(){
             setupSerial();
-            setupTemp();
-            // if(setupSD() == INIT_SD_ERROR){
-            //     Serial.println(SD_ERROR_MSG);
-            // }
-            // else{
-            //     Serial.println(SD_OK_MSG);
-            // }
+            setupMPU();
         }
     public:
         int log(String input){
             Serial.println(input);
-            // File file = SD.open(fileName, FILE_READ);
-            // if(!file) return FILE_READ_ERROR;
-            // file.println(input);
-            // file.close();
+            File file = SD.open(fileName, FILE_WRITE);
+            if(!file)
+                Serial.println("Error writing to the Sd card");
+            else 
+                Serial.println("Written to SD Card!");
+            file.println(input);
+            file.close();
             return STATUS_OK;
-        }
-        void log(int code){
-            Serial.println(code);
         }
         HAB(void){
             this->setup();
@@ -55,9 +56,7 @@ class HAB{
 class Data{
     public:
         static byte temperature(void){
-            byte temp = 0;
-            byte humidity = 0;
-            signed int chk = DHT.read(tempPin);
+            signed int chk = 0;
             return chk;
         }
         static String GPS(){
@@ -75,11 +74,24 @@ class Data{
                 return Data;
             }
             else{
-                delay(200);
-                return GPS();
+                delay(20);
+                return "*";
             }
         }
         static String MPU(){
+            int16_t ax, ay, az;
+            int16_t gx, gy, gz;
+            double time;
+            String out;
+            accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+            out += String(ax);
+            out += String(ay); 
+            out += String(az); 
+            out += String(gx); 
+            out += String(gy); 
+            out += String(gz); 
+            time = millis();
+            out += String(time);
             return "";
         }
 };

@@ -8,24 +8,19 @@ enum errorClass{
     INIT_GPS_ERROR
 };
 
+MPU6050 accelgyro;
 TinyGPSPlus gps;
 SoftwareSerial mySerial(9, 8);
-dht11 DHT;
 
+// #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+  Wire.begin();
+// #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+  Fastwire::setup(400, true);
+// #endif
+
+
+#define IMUInt      2
 #define SDPin       4
-#define fileName    "d.ata"
+#define fileName    "data.txt"
 #define tempPin     0
 #define BAUD        9600
-
-
-#define SD_ERROR_MSG        "Error initializing Sd card"
-#define FILE_ERROR_MSG      "Error initializing File"
-#define SERIAL_ERROR_MSG    "Error initializing Serial"
-#define TEMP_ERRR_MSG       "Error initializing Temperature"
-#define MPU_ERROR_MSG       "Error initializing MPU"
-
-#define SD_OK_MSG           "OK initializing Sd card"
-#define FILE_OK_MSG         "OK initializing File"
-#define SERIAL_OK_MSG       "OK initializing Serial"
-#define TEMP_OK_MSG         "OK initializing Temperature"
-#define MPU_OK_MSG          "OK initializing MPU"
