@@ -6,5 +6,6 @@ void setup(){
 void loop(){
     Data dataRead;
     balloon->log(dataRead.GPS());
-    balloon->log(dataRead->temperature());
+    balloon->log("Temperature at altitude: ");
+    balloon->log(dataRead.temperature());
 }

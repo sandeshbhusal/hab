@@ -9,11 +9,12 @@ enum errorClass{
 };
 
 TinyGPSPlus gps;
-SoftwareSerial mySerial(7, 8);
+SoftwareSerial mySerial(9, 8);
+dht11 DHT;
 
 #define SDPin       4
 #define fileName    "d.ata"
-#define tempPin     A0
+#define tempPin     0
 #define BAUD        9600
 
 

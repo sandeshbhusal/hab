@@ -1,6 +1,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include <string.h>
+#include "dht2/dht11.h"
 #include "lib/TinyGPS++.h"
 #include "SoftwareSerial.h"
 #include "defines.h"
@@ -26,7 +27,7 @@ class HAB{
         }
         int setup(){
             setupSerial();
-            // setupTemp();
+            setupTemp();
             // if(setupSD() == INIT_SD_ERROR){
             //     Serial.println(SD_ERROR_MSG);
             // }
@@ -53,11 +54,11 @@ class HAB{
 
 class Data{
     public:
-        static float temperature(void){
-            float voltage = analogRead(tempPin);
-            voltage /= 1024;
-            voltage = (voltage - 0.33) * 100;
-            return voltage;
+        static byte temperature(void){
+            byte temp = 0;
+            byte humidity = 0;
+            signed int chk = DHT.read(tempPin);
+            return chk;
         }
         static String GPS(){
             //Return data format: Lat|Lng|Alt|Satellites|Date|Time
